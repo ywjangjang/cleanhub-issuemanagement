@@ -17,6 +17,20 @@
       animation: spin .7s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .photo-preview img {
+      width: 80px; height: 80px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+    }
+    .photo-preview .remove-btn {
+      position: absolute; top: -6px; right: -6px;
+      width: 20px; height: 20px;
+      background: #ef4444; color: white;
+      border-radius: 50%; font-size: 12px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; line-height: 1;
+    }
   </style>
 </head>
 <body class="bg-slate-50 min-h-screen font-sans antialiased">
@@ -32,8 +46,6 @@
         <span class="font-bold text-slate-800 text-lg tracking-tight">클린허브</span>
         <span class="text-slate-400 text-sm hidden sm:inline">개선 아이디어</span>
       </div>
-
-      <!-- 로그인 전 -->
       <div id="authLoggedOut" class="hidden">
         <button id="btnGoogleLogin"
           class="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-700 text-sm font-medium hover:bg-slate-50 transition shadow-sm">
@@ -46,29 +58,20 @@
           Google로 로그인
         </button>
       </div>
-
-      <!-- 로그인 후 -->
       <div id="authLoggedIn" class="hidden flex items-center gap-3">
         <span id="userDisplayName" class="text-sm text-slate-600 font-medium hidden sm:inline"></span>
-        <div id="userAvatar"
-          class="w-8 h-8 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center select-none">
-          ?
-        </div>
-        <button id="btnLogout"
-          class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-100 transition border border-slate-200">
-          로그아웃
-        </button>
+        <div id="userAvatar" class="w-8 h-8 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center select-none">?</div>
+        <button id="btnLogout" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-100 transition border border-slate-200">로그아웃</button>
       </div>
     </div>
   </header>
 
   <main class="max-w-2xl mx-auto px-4 sm:px-6 py-10 space-y-10">
 
-    <!-- 로그인 유도 배너 -->
+    <!-- 로그인 유도 -->
     <section id="loginBanner" class="hidden rounded-2xl border border-blue-200 bg-blue-50 p-8 text-center space-y-4">
       <svg class="w-12 h-12 text-blue-400 mx-auto" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round"
-          d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
       </svg>
       <h2 class="text-xl font-bold text-slate-800">로그인이 필요합니다</h2>
       <p class="text-slate-500 text-sm">아이디어를 제출하거나 내역을 확인하려면 먼저 로그인해 주세요.</p>
@@ -90,8 +93,7 @@
         <!-- AS-IS -->
         <div class="space-y-2">
           <label class="block text-sm font-bold text-slate-700" for="inputAsIs">
-            🔴 현재 문제점 (AS-IS)
-            <span class="text-red-400 ml-0.5">*</span>
+            🔴 현재 문제점 (AS-IS) <span class="text-red-400">*</span>
           </label>
           <p class="text-xs text-slate-400">현장에서 무엇이 불편하거나 비효율적인가요?</p>
           <textarea id="inputAsIs" required rows="3" maxlength="1000"
@@ -103,8 +105,7 @@
         <!-- TO-BE -->
         <div class="space-y-2">
           <label class="block text-sm font-bold text-slate-700" for="inputToBe">
-            🟢 개선 아이디어 (TO-BE)
-            <span class="text-red-400 ml-0.5">*</span>
+            🟢 개선 아이디어 (TO-BE) <span class="text-red-400">*</span>
           </label>
           <p class="text-xs text-slate-400">어떻게 바꾸면 좋을까요? (말도 안 되는 상상도 환영!)</p>
           <textarea id="inputToBe" required rows="3" maxlength="1000"
@@ -125,6 +126,28 @@
                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"></textarea>
         </div>
 
+        <!-- 사진 첨부 -->
+        <div class="space-y-2">
+          <label class="block text-sm font-bold text-slate-700">
+            📷 사진 첨부 <span class="text-slate-400 font-normal">(선택, 최대 5장)</span>
+          </label>
+          <p class="text-xs text-slate-400">현장 상황을 사진으로 보여주세요. 장당 최대 10MB.</p>
+
+          <!-- 업로드 버튼 -->
+          <label id="photoLabel"
+            class="flex items-center gap-2 w-fit px-4 py-2.5 rounded-xl border-2 border-dashed border-slate-300
+                   text-sm text-slate-500 cursor-pointer hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            사진 선택
+            <input id="photoInput" type="file" accept="image/*" multiple class="hidden" />
+          </label>
+
+          <!-- 미리보기 -->
+          <div id="photoPreviewArea" class="flex flex-wrap gap-3 mt-2"></div>
+        </div>
+
         <div class="flex justify-end pt-1">
           <button type="submit" id="btnSubmit"
             class="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 text-white font-semibold text-sm
@@ -133,6 +156,15 @@
             <div id="submitSpinner" class="spinner hidden !w-4 !h-4 border-2 border-white/40 border-t-white"></div>
           </button>
         </div>
+
+        <!-- 업로드 진행 상태 -->
+        <div id="uploadProgress" class="hidden space-y-1">
+          <p id="uploadProgressText" class="text-xs text-slate-500 text-center"></p>
+          <div class="w-full bg-slate-100 rounded-full h-1.5">
+            <div id="uploadProgressBar" class="bg-blue-500 h-1.5 rounded-full transition-all" style="width:0%"></div>
+          </div>
+        </div>
+
       </form>
     </section>
 
@@ -152,34 +184,33 @@
           새로고침
         </button>
       </div>
-
-      <div id="listLoading" class="flex justify-center py-12">
-        <div class="spinner"></div>
-      </div>
-
+      <div id="listLoading" class="flex justify-center py-12"><div class="spinner"></div></div>
       <div id="listEmpty" class="hidden rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center space-y-2">
         <p class="text-slate-500 text-sm font-medium">아직 제출한 아이디어가 없습니다.</p>
         <p class="text-slate-400 text-xs">위 폼을 통해 첫 번째 아이디어를 제출해 보세요.</p>
       </div>
-
       <div id="problemList" class="hidden space-y-4"></div>
     </section>
 
   </main>
 
+  <!-- 사진 확대 모달 -->
+  <div id="imageModal" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 hidden" onclick="this.classList.add('hidden')">
+    <img id="imageModalImg" src="" class="max-w-full max-h-[90vh] rounded-xl object-contain" />
+  </div>
+
   <!-- 토스트 -->
-  <div id="toast"
-    class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3
-           px-5 py-3.5 rounded-2xl shadow-xl text-sm font-medium text-white min-w-[220px] max-w-sm">
-    <span id="toastIcon"></span>
-    <span id="toastMsg"></span>
+  <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3
+         px-5 py-3.5 rounded-2xl shadow-xl text-sm font-medium text-white min-w-[220px] max-w-sm">
+    <span id="toastIcon"></span><span id="toastMsg"></span>
   </div>
 
   <script type="module">
     import {
-      auth, db, googleProvider,
+      auth, db, storage, googleProvider,
       signInWithPopup, signOut, onAuthStateChanged,
       collection, addDoc, query, where, orderBy, getDocs, serverTimestamp,
+      ref, uploadBytes, getDownloadURL,
     } from "./firebase-config.js";
 
     const authLoggedOut   = document.getElementById("authLoggedOut");
@@ -196,8 +227,14 @@
     const listLoading     = document.getElementById("listLoading");
     const listEmpty       = document.getElementById("listEmpty");
     const problemList     = document.getElementById("problemList");
+    const photoInput      = document.getElementById("photoInput");
+    const photoPreviewArea = document.getElementById("photoPreviewArea");
+    const uploadProgress  = document.getElementById("uploadProgress");
+    const uploadProgressText = document.getElementById("uploadProgressText");
+    const uploadProgressBar  = document.getElementById("uploadProgressBar");
 
     let currentUser = null;
+    let selectedFiles = [];  // 선택된 파일 목록
 
     // ── 토스트 ───────────────────────────────────────────────
     let toastTimer;
@@ -211,10 +248,10 @@
       document.getElementById("toastMsg").textContent  = msg;
       document.getElementById("toastIcon").textContent = icons[type];
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.classList.add("hidden"), 3000);
+      toastTimer = setTimeout(() => toast.classList.add("hidden"), 3500);
     }
 
-    // ── UI 상태 전환 ──────────────────────────────────────────
+    // ── UI 전환 ───────────────────────────────────────────────
     function showLoggedIn(user) {
       authLoggedOut.classList.add("hidden");
       authLoggedIn.classList.remove("hidden");
@@ -225,7 +262,6 @@
       userDisplayName.textContent = name;
       userAvatar.textContent = name.charAt(0).toUpperCase();
     }
-
     function showLoggedOut() {
       authLoggedOut.classList.remove("hidden");
       authLoggedIn.classList.add("hidden");
@@ -234,20 +270,132 @@
       myListSection.classList.add("hidden");
     }
 
-    // ── 로그인/로그아웃 ───────────────────────────────────────
     async function handleGoogleLogin() {
-      try {
-        await signInWithPopup(auth, googleProvider);
-      } catch (e) {
-        showToast("로그인에 실패했습니다.", "error");
-      }
+      try { await signInWithPopup(auth, googleProvider); }
+      catch (e) { showToast("로그인에 실패했습니다.", "error"); }
     }
-
     document.getElementById("btnGoogleLogin").addEventListener("click", handleGoogleLogin);
     document.getElementById("btnGoogleLogin2").addEventListener("click", handleGoogleLogin);
     document.getElementById("btnLogout").addEventListener("click", () => signOut(auth));
-    document.getElementById("btnRefresh").addEventListener("click", () => {
-      if (currentUser) loadMyProblems(currentUser.uid);
+    document.getElementById("btnRefresh").addEventListener("click", () => { if (currentUser) loadMyProblems(currentUser.uid); });
+
+    // ── 사진 선택 처리 ────────────────────────────────────────
+    photoInput.addEventListener("change", (e) => {
+      const files = Array.from(e.target.files);
+      const remaining = 5 - selectedFiles.length;
+
+      if (files.length > remaining) {
+        showToast(`최대 5장까지 첨부 가능합니다. ${remaining}장 더 추가할 수 있어요.`, "info");
+      }
+
+      files.slice(0, remaining).forEach(file => {
+        if (file.size > 10 * 1024 * 1024) {
+          showToast(`${file.name}은 10MB를 초과합니다.`, "error");
+          return;
+        }
+        selectedFiles.push(file);
+        addPreview(file, selectedFiles.length - 1);
+      });
+
+      // 5장 이상이면 버튼 숨김
+      document.getElementById("photoLabel").style.display =
+        selectedFiles.length >= 5 ? "none" : "";
+      photoInput.value = "";
+    });
+
+    function addPreview(file, index) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const wrap = document.createElement("div");
+        wrap.className = "photo-preview relative";
+        wrap.dataset.index = index;
+        wrap.innerHTML = `
+          <img src="${e.target.result}" alt="미리보기" onclick="openImage('${e.target.result}')" class="cursor-pointer" />
+          <div class="remove-btn" onclick="removePhoto(${index})">✕</div>
+        `;
+        photoPreviewArea.appendChild(wrap);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    window.removePhoto = function(index) {
+      selectedFiles[index] = null;
+      const el = photoPreviewArea.querySelector(`[data-index="${index}"]`);
+      if (el) el.remove();
+      document.getElementById("photoLabel").style.display = "";
+    };
+
+    window.openImage = function(src) {
+      document.getElementById("imageModalImg").src = src;
+      document.getElementById("imageModal").classList.remove("hidden");
+    };
+
+    // ── 사진 업로드 ───────────────────────────────────────────
+    async function uploadPhotos(uid) {
+      const files = selectedFiles.filter(f => f !== null);
+      if (files.length === 0) return [];
+
+      uploadProgress.classList.remove("hidden");
+      const urls = [];
+
+      for (let i = 0; i < files.length; i++) {
+        uploadProgressText.textContent = `사진 업로드 중... (${i + 1}/${files.length})`;
+        uploadProgressBar.style.width = `${((i) / files.length) * 100}%`;
+
+        const timestamp = Date.now();
+        const storageRef = ref(storage, `problems/${uid}/${timestamp}_${files[i].name}`);
+        await uploadBytes(storageRef, files[i]);
+        const url = await getDownloadURL(storageRef);
+        urls.push(url);
+      }
+
+      uploadProgressBar.style.width = "100%";
+      uploadProgressText.textContent = "업로드 완료!";
+      setTimeout(() => uploadProgress.classList.add("hidden"), 1000);
+      return urls;
+    }
+
+    // ── 폼 제출 ────────────────────────────────────────────────
+    problemForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!currentUser) return;
+
+      const asIs    = document.getElementById("inputAsIs").value.trim();
+      const toBe    = document.getElementById("inputToBe").value.trim();
+      const benefit = document.getElementById("inputBenefit").value.trim();
+
+      if (!asIs || !toBe) { showToast("필수 항목을 모두 입력해 주세요.", "error"); return; }
+
+      btnSubmit.disabled = true;
+      submitBtnText.textContent = "제출 중...";
+      submitSpinner.classList.remove("hidden");
+
+      try {
+        const photoUrls = await uploadPhotos(currentUser.uid);
+
+        await addDoc(collection(db, "problems"), {
+          asIs, toBe, benefit,
+          photoUrls,
+          userId:    currentUser.uid,
+          userEmail: currentUser.email,
+          userName:  currentUser.displayName || currentUser.email,
+          createdAt: serverTimestamp(),
+        });
+
+        problemForm.reset();
+        selectedFiles = [];
+        photoPreviewArea.innerHTML = "";
+        document.getElementById("photoLabel").style.display = "";
+        showToast("아이디어가 제출되었습니다! 감사해요 😊", "success");
+        loadMyProblems(currentUser.uid);
+      } catch (e) {
+        console.error(e);
+        showToast("제출 중 오류가 발생했습니다.", "error");
+      } finally {
+        btnSubmit.disabled = false;
+        submitBtnText.textContent = "제출하기";
+        submitSpinner.classList.add("hidden");
+      }
     });
 
     // ── 내 제출 내역 ──────────────────────────────────────────
@@ -275,6 +423,14 @@
             ? d.createdAt.toDate().toLocaleDateString("ko-KR", { year:"numeric", month:"2-digit", day:"2-digit" })
             : "—";
 
+          const photosHtml = (d.photoUrls?.length > 0) ? `
+            <div class="flex flex-wrap gap-2 pt-1">
+              ${d.photoUrls.map(url => `
+                <img src="${url}" onclick="openImage('${url}')"
+                  class="w-20 h-20 object-cover rounded-xl border border-slate-200 cursor-pointer hover:opacity-90 transition" />
+              `).join("")}
+            </div>` : "";
+
           const card = document.createElement("div");
           card.className = "bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4";
           card.innerHTML = `
@@ -284,18 +440,19 @@
             <div class="space-y-3">
               <div class="space-y-1">
                 <p class="text-xs font-bold text-red-500">🔴 현재 문제점 (AS-IS)</p>
-                <p class="text-sm text-slate-700 leading-relaxed">${escapeHtml(d.asIs)}</p>
+                <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">${escapeHtml(d.asIs)}</p>
               </div>
               <div class="space-y-1">
                 <p class="text-xs font-bold text-green-600">🟢 개선 아이디어 (TO-BE)</p>
-                <p class="text-sm text-slate-700 leading-relaxed">${escapeHtml(d.toBe)}</p>
+                <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">${escapeHtml(d.toBe)}</p>
               </div>
               ${d.benefit ? `
               <div class="rounded-xl bg-amber-50 border border-amber-100 px-4 py-3 space-y-1">
                 <p class="text-xs font-bold text-amber-600">✨ 기대 효과</p>
-                <p class="text-sm text-slate-700 leading-relaxed">${escapeHtml(d.benefit)}</p>
+                <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">${escapeHtml(d.benefit)}</p>
               </div>` : ""}
             </div>
+            ${photosHtml}
           `;
           problemList.appendChild(card);
         });
@@ -306,64 +463,15 @@
       }
     }
 
-    // ── 폼 제출 ────────────────────────────────────────────────
-    problemForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if (!currentUser) return;
-
-      const asIs    = document.getElementById("inputAsIs").value.trim();
-      const toBe    = document.getElementById("inputToBe").value.trim();
-      const benefit = document.getElementById("inputBenefit").value.trim();
-
-      if (!asIs || !toBe) {
-        showToast("필수 항목을 모두 입력해 주세요.", "error");
-        return;
-      }
-
-      btnSubmit.disabled = true;
-      submitBtnText.textContent = "제출 중...";
-      submitSpinner.classList.remove("hidden");
-
-      try {
-        await addDoc(collection(db, "problems"), {
-          asIs,
-          toBe,
-          benefit,
-          userId:    currentUser.uid,
-          userEmail: currentUser.email,
-          userName:  currentUser.displayName || currentUser.email,
-          createdAt: serverTimestamp(),
-        });
-
-        problemForm.reset();
-        showToast("아이디어가 제출되었습니다! 감사해요 😊", "success");
-        loadMyProblems(currentUser.uid);
-      } catch (e) {
-        console.error(e);
-        showToast("제출 중 오류가 발생했습니다.", "error");
-      } finally {
-        btnSubmit.disabled = false;
-        submitBtnText.textContent = "제출하기";
-        submitSpinner.classList.add("hidden");
-      }
-    });
-
-    // ── Auth 상태 감지 ────────────────────────────────────────
+    // ── Auth ─────────────────────────────────────────────────
     onAuthStateChanged(auth, (user) => {
-      if (user) {
-        currentUser = user;
-        showLoggedIn(user);
-        loadMyProblems(user.uid);
-      } else {
-        currentUser = null;
-        showLoggedOut();
-      }
+      if (user) { currentUser = user; showLoggedIn(user); loadMyProblems(user.uid); }
+      else { currentUser = null; showLoggedOut(); }
     });
 
     function escapeHtml(str = "") {
       return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
     }
   </script>
-
 </body>
 </html>

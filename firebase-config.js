@@ -3,7 +3,6 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
-  signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -15,11 +14,16 @@ import {
   where,
   orderBy,
   getDocs,
-  onSnapshot,
   doc,
   updateDoc,
   serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBvNdhi7NnqLK7gz8HZj4ug9cIZvOBTkmE",
@@ -36,14 +40,14 @@ export const ADMIN_EMAILS = [
 ];
 
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const auth    = getAuth(app);
+export const db      = getFirestore(app);
+export const storage = getStorage(app);
 export const googleProvider = new GoogleAuthProvider();
 
 export {
   GoogleAuthProvider,
   signInWithPopup,
-  signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
   collection,
@@ -52,10 +56,12 @@ export {
   where,
   orderBy,
   getDocs,
-  onSnapshot,
   doc,
   updateDoc,
   serverTimestamp,
+  ref,
+  uploadBytes,
+  getDownloadURL,
 };
 
 export function isAdmin(email) {
