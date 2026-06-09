@@ -172,6 +172,7 @@
       auth, db, isAdmin,
       signOut, onAuthStateChanged,
       collection, query, orderBy, getDocs,
+      doc, deleteDoc,
     } from "./firebase-config.js";
 
     const accessDenied    = document.getElementById("accessDenied");
@@ -444,6 +445,11 @@
           <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">${escapeHtml(d.benefit)}</p>
         </div>` : ""}
         ${photoSection}
+        <div class="pt-2 border-t border-slate-100">
+          <button class="btn-admin-delete w-full py-2 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 border border-red-200 transition" data-docid="${d.id}">
+            이 제출 내역 삭제
+          </button>
+        </div>
       `;
       detailModal.classList.remove("hidden");
     }
@@ -456,6 +462,23 @@
     document.getElementById("btnCloseModal").addEventListener("click", () => detailModal.classList.add("hidden"));
     detailModal.addEventListener("click", e => { if (e.target === detailModal) detailModal.classList.add("hidden"); });
     document.addEventListener("keydown", e => { if (e.key === "Escape") { detailModal.classList.add("hidden"); document.getElementById("imageModal").classList.add("hidden"); } });
+
+    // ── 삭제 (이벤트 위임) ───────────────────────────────────
+    modalContent.addEventListener("click", async (e) => {
+      const btn = e.target.closest(".btn-admin-delete");
+      if (!btn) return;
+      const docId = btn.dataset.docid;
+      if (!confirm("이 제출 내역을 삭제할까요? 복구할 수 없습니다.")) return;
+      try {
+        await deleteDoc(doc(db, "problems", docId));
+        detailModal.classList.add("hidden");
+        showToast("삭제되었습니다.", "success");
+        await loadAllProblems();
+      } catch (e) {
+        console.error(e);
+        showToast("삭제 중 오류가 발생했습니다.", "error");
+      }
+    });
 
     function formatDate(ts, full = false) {
       if (!ts?.toDate) return "—";
