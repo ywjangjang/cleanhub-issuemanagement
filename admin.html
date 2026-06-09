@@ -41,7 +41,7 @@
     </div>
   </div>
 
-  <!-- ── 초기 로딩 ── -->
+  <!-- 초기 로딩 -->
   <div id="initLoading" class="fixed inset-0 z-40 bg-slate-50 flex flex-col items-center justify-center gap-4">
     <div class="spinner"></div>
     <p class="text-slate-400 text-sm">권한 확인 중...</p>
@@ -53,7 +53,7 @@
       <div class="flex items-center gap-2">
         <svg class="w-7 h-7 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round"
-            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
         </svg>
         <span class="font-bold text-slate-800 text-lg tracking-tight">클린허브</span>
         <span class="px-2 py-0.5 text-xs font-semibold bg-indigo-100 text-indigo-700 rounded-full">관리자</span>
@@ -72,7 +72,7 @@
   <!-- ── 메인 ── -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
 
-    <!-- 통계 카드 -->
+    <!-- 통계 -->
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-1">
         <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">전체 제출</p>
@@ -90,39 +90,21 @@
 
     <!-- 툴바 -->
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-wrap gap-3 items-center">
-      <!-- 검색 -->
       <div class="relative flex-1 min-w-[180px]">
         <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.65 16.65 7.5 7.5 0 0016.65 16.65z"/>
         </svg>
-        <input id="searchInput" type="text" placeholder="제목, 이름, 이메일 검색..."
+        <input id="searchInput" type="text" placeholder="이름, 이메일, 내용 검색..."
           class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-sm text-slate-800 placeholder-slate-400
                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
       </div>
 
-      <!-- 분류 필터 -->
-      <select id="filterCategory"
-        class="px-4 py-2 rounded-xl border border-slate-200 text-sm text-slate-700 bg-white
-               focus:outline-none focus:ring-2 focus:ring-indigo-500 transition appearance-none">
-        <option value="">모든 분류</option>
-        <option>시설/환경</option>
-        <option>업무 프로세스</option>
-        <option>장비/도구</option>
-        <option>안전</option>
-        <option>소통/협업</option>
-        <option>기타</option>
-      </select>
-
       <!-- 뷰 전환 -->
       <div class="flex rounded-xl border border-slate-200 overflow-hidden">
         <button id="btnViewTable" onclick="setView('table')"
-          class="px-3 py-2 text-xs font-medium bg-indigo-600 text-white transition">
-          전체 목록
-        </button>
+          class="px-3 py-2 text-xs font-medium bg-indigo-600 text-white transition">전체 목록</button>
         <button id="btnViewGroup" onclick="setView('group')"
-          class="px-3 py-2 text-xs font-medium text-slate-500 hover:bg-slate-50 transition">
-          제출자별
-        </button>
+          class="px-3 py-2 text-xs font-medium text-slate-500 hover:bg-slate-50 transition">제출자별</button>
       </div>
 
       <!-- 다운로드 -->
@@ -134,7 +116,6 @@
         스프레드시트 다운로드
       </button>
 
-      <!-- 새로고침 -->
       <button id="btnRefresh"
         class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-500
                hover:bg-slate-100 border border-slate-200 transition">
@@ -145,7 +126,7 @@
       </button>
     </div>
 
-    <!-- ── 전체 목록 뷰 ── -->
+    <!-- 전체 목록 뷰 -->
     <div id="viewTable" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
       <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
         <h2 class="font-bold text-slate-800">전체 제출 내역</h2>
@@ -161,9 +142,9 @@
             <tr class="bg-slate-50 border-b border-slate-100 text-left">
               <th class="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">제출일</th>
               <th class="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">제출자</th>
-              <th class="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">제목</th>
-              <th class="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">분류</th>
-              <th class="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">내용</th>
+              <th class="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">🔴 AS-IS</th>
+              <th class="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">🟢 TO-BE</th>
+              <th class="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">✨ 기대 효과</th>
             </tr>
           </thead>
           <tbody id="tableBody" class="divide-y divide-slate-100"></tbody>
@@ -171,7 +152,7 @@
       </div>
     </div>
 
-    <!-- ── 제출자별 뷰 ── -->
+    <!-- 제출자별 뷰 -->
     <div id="viewGroup" class="hidden space-y-4">
       <div id="groupLoading" class="flex justify-center py-16"><div class="spinner"></div></div>
       <div id="groupEmpty" class="hidden bg-white rounded-2xl border border-slate-200 py-16 text-center">
@@ -182,7 +163,7 @@
 
   </main>
 
-  <!-- ── 상세 모달 ── -->
+  <!-- 상세 모달 -->
   <div id="detailModal"
     class="fixed inset-0 z-40 bg-slate-900/60 flex items-center justify-center p-4 hidden"
     style="backdrop-filter:blur(2px)">
@@ -200,7 +181,7 @@
     </div>
   </div>
 
-  <!-- ── 토스트 ── -->
+  <!-- 토스트 -->
   <div id="toast"
     class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3
            px-5 py-3.5 rounded-2xl shadow-xl text-sm font-medium text-white min-w-[220px] max-w-sm">
@@ -225,7 +206,6 @@
     const tableBody       = document.getElementById("tableBody");
     const resultCount     = document.getElementById("resultCount");
     const searchInput     = document.getElementById("searchInput");
-    const filterCategory  = document.getElementById("filterCategory");
     const groupLoading    = document.getElementById("groupLoading");
     const groupEmpty      = document.getElementById("groupEmpty");
     const groupContent    = document.getElementById("groupContent");
@@ -241,9 +221,9 @@
       const icons  = { success: "✓", error: "✕", info: "ℹ" };
       toast.className = toast.className.replace(/bg-\w+-\d+/g, "");
       toast.classList.remove("hidden");
-      toast.classList.add(colors[type] || colors.info);
+      toast.classList.add(colors[type]);
       document.getElementById("toastMsg").textContent  = msg;
-      document.getElementById("toastIcon").textContent = icons[type] || icons.info;
+      document.getElementById("toastIcon").textContent = icons[type];
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => toast.classList.add("hidden"), 3000);
     }
@@ -300,7 +280,7 @@
     function updateStats() {
       const now = new Date();
       const thisMonth = allData.filter(d => {
-        const date = d.createdAt?.toDate ? d.createdAt.toDate() : null;
+        const date = d.createdAt?.toDate?.();
         return date && date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
       });
       const uniqueUsers = new Set(allData.map(d => d.userId)).size;
@@ -311,24 +291,19 @@
 
     // ── 필터 ─────────────────────────────────────────────────
     function applyFilter() {
-      const keyword  = searchInput.value.toLowerCase();
-      const category = filterCategory.value;
-
-      const filtered = allData.filter(d => {
-        const matchKeyword  = !keyword  ||
-          d.title?.toLowerCase().includes(keyword) ||
-          d.userEmail?.toLowerCase().includes(keyword) ||
-          d.userName?.toLowerCase().includes(keyword);
-        const matchCategory = !category || d.category === category;
-        return matchKeyword && matchCategory;
-      });
-
+      const keyword = searchInput.value.toLowerCase();
+      const filtered = allData.filter(d =>
+        !keyword ||
+        d.asIs?.toLowerCase().includes(keyword) ||
+        d.toBe?.toLowerCase().includes(keyword) ||
+        d.userEmail?.toLowerCase().includes(keyword) ||
+        d.userName?.toLowerCase().includes(keyword)
+      );
       if (viewMode === "table") renderTable(filtered);
       else renderGroup(filtered);
     }
 
     searchInput.addEventListener("input", applyFilter);
-    filterCategory.addEventListener("change", applyFilter);
     document.getElementById("btnRefresh").addEventListener("click", loadAllProblems);
 
     // ── 뷰 전환 ──────────────────────────────────────────────
@@ -345,16 +320,7 @@
       applyFilter();
     };
 
-    // ── 전체 목록 테이블 렌더링 ───────────────────────────────
-    const categoryColors = {
-      "시설/환경":    "bg-purple-100 text-purple-700",
-      "업무 프로세스": "bg-blue-100 text-blue-700",
-      "장비/도구":    "bg-orange-100 text-orange-700",
-      "안전":         "bg-red-100 text-red-700",
-      "소통/협업":    "bg-teal-100 text-teal-700",
-      "기타":         "bg-slate-100 text-slate-600",
-    };
-
+    // ── 전체 목록 테이블 ─────────────────────────────────────
     function renderTable(data) {
       tableBody.innerHTML = "";
       resultCount.textContent = `${data.length}건`;
@@ -368,25 +334,22 @@
       tableEmpty.classList.add("hidden");
 
       data.forEach(d => {
-        const date = formatDate(d.createdAt);
-        const catColor = categoryColors[d.category] || "bg-slate-100 text-slate-600";
-
         const tr = document.createElement("tr");
         tr.className = "hover:bg-slate-50 transition cursor-pointer";
         tr.innerHTML = `
-          <td class="px-5 py-3.5 text-slate-500 whitespace-nowrap text-xs">${date}</td>
+          <td class="px-5 py-3.5 text-slate-500 whitespace-nowrap text-xs">${formatDate(d.createdAt)}</td>
           <td class="px-5 py-3.5">
             <p class="font-medium text-slate-800 text-xs">${escapeHtml(d.userName || "—")}</p>
             <p class="text-slate-400 text-xs mt-0.5">${escapeHtml(d.userEmail || "")}</p>
           </td>
-          <td class="px-5 py-3.5 max-w-[200px]">
-            <p class="font-medium text-slate-800 truncate">${escapeHtml(d.title)}</p>
+          <td class="px-5 py-3.5 max-w-[180px]">
+            <p class="text-slate-700 text-xs truncate">${escapeHtml(d.asIs || "")}</p>
           </td>
-          <td class="px-5 py-3.5 whitespace-nowrap">
-            <span class="text-xs font-medium px-2 py-1 rounded-full ${catColor}">${escapeHtml(d.category)}</span>
+          <td class="px-5 py-3.5 max-w-[180px]">
+            <p class="text-slate-700 text-xs truncate">${escapeHtml(d.toBe || "")}</p>
           </td>
-          <td class="px-5 py-3.5 max-w-[260px]">
-            <p class="text-slate-500 text-xs truncate">${escapeHtml(d.description)}</p>
+          <td class="px-5 py-3.5 max-w-[180px]">
+            <p class="text-slate-500 text-xs truncate">${escapeHtml(d.benefit || "—")}</p>
           </td>
         `;
         tr.addEventListener("click", () => openModal(d));
@@ -394,31 +357,22 @@
       });
     }
 
-    // ── 제출자별 그룹 렌더링 ─────────────────────────────────
+    // ── 제출자별 그룹 ────────────────────────────────────────
     function renderGroup(data) {
       groupContent.innerHTML = "";
-
-      if (data.length === 0) {
-        groupEmpty.classList.remove("hidden");
-        return;
-      }
+      if (data.length === 0) { groupEmpty.classList.remove("hidden"); return; }
       groupEmpty.classList.add("hidden");
 
-      // 제출자별로 묶기
       const grouped = {};
       data.forEach(d => {
         const key = d.userId || d.userEmail;
-        if (!grouped[key]) {
-          grouped[key] = { name: d.userName || "—", email: d.userEmail || "—", items: [] };
-        }
+        if (!grouped[key]) grouped[key] = { name: d.userName || "—", email: d.userEmail || "—", items: [] };
         grouped[key].items.push(d);
       });
 
       Object.values(grouped).forEach(group => {
         const section = document.createElement("div");
         section.className = "bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden";
-
-        // 제출자 헤더
         section.innerHTML = `
           <div class="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
             <div class="flex items-center gap-3">
@@ -430,30 +384,31 @@
                 <p class="text-slate-400 text-xs">${escapeHtml(group.email)}</p>
               </div>
             </div>
-            <span class="text-xs font-semibold bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full">
-              ${group.items.length}건
-            </span>
+            <span class="text-xs font-semibold bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full">${group.items.length}건</span>
           </div>
         `;
 
-        // 해당 제출자의 아이템들
         const list = document.createElement("div");
         list.className = "divide-y divide-slate-100";
 
         group.items.forEach(d => {
-          const date = formatDate(d.createdAt);
-          const catColor = categoryColors[d.category] || "bg-slate-100 text-slate-600";
           const row = document.createElement("div");
-          row.className = "px-6 py-4 hover:bg-slate-50 cursor-pointer transition flex items-start gap-4";
+          row.className = "px-6 py-4 hover:bg-slate-50 cursor-pointer transition space-y-2";
           row.innerHTML = `
-            <div class="flex-1 min-w-0 space-y-1">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="font-medium text-slate-800 text-sm">${escapeHtml(d.title)}</span>
-                <span class="text-xs font-medium px-2 py-0.5 rounded-full ${catColor}">${escapeHtml(d.category)}</span>
-              </div>
-              <p class="text-slate-500 text-xs truncate">${escapeHtml(d.description)}</p>
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-400">${formatDate(d.createdAt)}</span>
             </div>
-            <span class="text-xs text-slate-400 whitespace-nowrap shrink-0 mt-0.5">${date}</span>
+            <div class="grid sm:grid-cols-2 gap-2">
+              <div class="space-y-0.5">
+                <p class="text-xs font-bold text-red-500">🔴 AS-IS</p>
+                <p class="text-xs text-slate-600 line-clamp-2">${escapeHtml(d.asIs || "")}</p>
+              </div>
+              <div class="space-y-0.5">
+                <p class="text-xs font-bold text-green-600">🟢 TO-BE</p>
+                <p class="text-xs text-slate-600 line-clamp-2">${escapeHtml(d.toBe || "")}</p>
+              </div>
+            </div>
+            ${d.benefit ? `<p class="text-xs text-amber-600">✨ ${escapeHtml(d.benefit)}</p>` : ""}
           `;
           row.addEventListener("click", () => openModal(d));
           list.appendChild(row);
@@ -466,36 +421,28 @@
 
     // ── CSV 다운로드 ──────────────────────────────────────────
     document.getElementById("btnDownload").addEventListener("click", () => {
-      if (allData.length === 0) {
-        showToast("다운로드할 데이터가 없습니다.", "error");
-        return;
-      }
+      if (allData.length === 0) { showToast("다운로드할 데이터가 없습니다.", "error"); return; }
 
-      const headers = ["제출일", "제출자 이름", "이메일", "제목", "분류", "내용", "개선 제안"];
+      const headers = ["제출일", "제출자 이름", "이메일", "현재 문제점 (AS-IS)", "개선 아이디어 (TO-BE)", "기대 효과 (Benefit)"];
       const rows = allData.map(d => [
         formatDate(d.createdAt),
-        d.userName || "",
+        d.userName  || "",
         d.userEmail || "",
-        d.title || "",
-        d.category || "",
-        d.description || "",
-        d.suggestion || "",
+        d.asIs      || "",
+        d.toBe      || "",
+        d.benefit   || "",
       ]);
 
-      const csvContent = [headers, ...rows]
-        .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+      const csv = [headers, ...rows]
+        .map(row => row.map(cell => `"${String(cell).replace(/"/g,'""')}"`).join(","))
         .join("\n");
 
-      const BOM = "﻿"; // 한글 깨짐 방지
-      const blob = new Blob([BOM + csvContent], { type: "text/csv;charset=utf-8;" });
-      const url  = URL.createObjectURL(blob);
+      const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
       const a    = document.createElement("a");
-      const date = new Date().toISOString().slice(0, 10);
-      a.href     = url;
-      a.download = `클린허브_제출내역_${date}.csv`;
+      a.href     = URL.createObjectURL(blob);
+      a.download = `클린허브_제출내역_${new Date().toISOString().slice(0,10)}.csv`;
       a.click();
-      URL.revokeObjectURL(url);
-      showToast("스프레드시트 다운로드가 시작되었습니다.", "success");
+      showToast("다운로드가 시작되었습니다.", "success");
     });
 
     // ── 상세 모달 ────────────────────────────────────────────
@@ -503,25 +450,26 @@
     const modalContent = document.getElementById("modalContent");
 
     function openModal(d) {
-      const catColor = categoryColors[d.category] || "bg-slate-100 text-slate-600";
       modalContent.innerHTML = `
-        <div class="flex flex-wrap gap-2 items-center">
-          <span class="text-xs font-medium px-2.5 py-1 rounded-full ${catColor}">${escapeHtml(d.category)}</span>
-          <span class="text-xs text-slate-400 ml-auto">${formatDate(d.createdAt, true)}</span>
+        <div class="flex items-center justify-between">
+          <p class="text-xs text-slate-400">${formatDate(d.createdAt, true)}</p>
         </div>
-        <h4 class="text-lg font-bold text-slate-800">${escapeHtml(d.title)}</h4>
         <div class="space-y-1">
           <p class="text-xs font-semibold text-slate-500">제출자</p>
           <p class="text-sm text-slate-700">${escapeHtml(d.userName || "—")} <span class="text-slate-400">&lt;${escapeHtml(d.userEmail || "")}&gt;</span></p>
         </div>
-        <div class="space-y-1">
-          <p class="text-xs font-semibold text-slate-500">내용</p>
-          <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">${escapeHtml(d.description)}</p>
+        <div class="rounded-xl border border-red-100 bg-red-50 px-4 py-3 space-y-1">
+          <p class="text-xs font-bold text-red-500">🔴 현재 문제점 (AS-IS)</p>
+          <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">${escapeHtml(d.asIs || "")}</p>
         </div>
-        ${d.suggestion ? `
-        <div class="rounded-xl bg-slate-50 border border-slate-100 px-4 py-3 space-y-1">
-          <p class="text-xs font-semibold text-slate-500">💡 개선 제안</p>
-          <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">${escapeHtml(d.suggestion)}</p>
+        <div class="rounded-xl border border-green-100 bg-green-50 px-4 py-3 space-y-1">
+          <p class="text-xs font-bold text-green-600">🟢 개선 아이디어 (TO-BE)</p>
+          <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">${escapeHtml(d.toBe || "")}</p>
+        </div>
+        ${d.benefit ? `
+        <div class="rounded-xl border border-amber-100 bg-amber-50 px-4 py-3 space-y-1">
+          <p class="text-xs font-bold text-amber-600">✨ 기대 효과 (Benefit)</p>
+          <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">${escapeHtml(d.benefit)}</p>
         </div>` : ""}
       `;
       detailModal.classList.remove("hidden");
@@ -535,10 +483,8 @@
     function formatDate(ts, full = false) {
       if (!ts?.toDate) return "—";
       const d = ts.toDate();
-      if (full) return d.toLocaleString("ko-KR");
-      return d.toLocaleDateString("ko-KR", { year: "numeric", month: "2-digit", day: "2-digit" });
+      return full ? d.toLocaleString("ko-KR") : d.toLocaleDateString("ko-KR", { year:"numeric", month:"2-digit", day:"2-digit" });
     }
-
     function escapeHtml(str = "") {
       return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
     }
