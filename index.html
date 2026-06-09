@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>클린허브 | 개선 문제 제출</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* 커스텀 스크롤바 */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+    /* 스피너 */
+    .spinner {
+      border: 3px solid #e2e8f0;
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      width: 24px; height: 24px;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    /* 상태 뱃지 */
+    .badge-접수됨  { @apply bg-blue-100 text-blue-700; }
+    .badge-검토중  { @apply bg-yellow-100 text-yellow-700; }
+    .badge-완료    { @apply bg-green-100 text-green-700; }
+    /* 토스트 */
+    #toast {
+      transition: opacity .3s, transform .3s;
+    }
+    #toast.hidden { opacity: 0; transform: translateY(12px); pointer-events: none; }
+  </style>
+</head>
+<body class="bg-slate-50 min-h-screen font-sans antialiased">
+
+  <!-- ── 헤더 ── -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <!-- 로고 아이콘 -->
+        <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <span class="font-bold text-slate-800 text-lg tracking-tight">클린허브</span>
+        <span class="text-slate-400 text-sm hidden sm:inline">개선 문제 관리</span>
+      </div>
+
+      <!-- 로그인 전 -->
+      <div id="authLoggedOut" class="hidden">
+        <button id="btnGoogleLogin"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-700 text-sm font-medium hover:bg-slate-50 transition shadow-sm">
+          <svg class="w-4 h-4" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          Google로 로그인
+        </button>
+      </div>
+
+      <!-- 로그인 후 -->
+      <div id="authLoggedIn" class="hidden flex items-center gap-3">
+        <span id="userDisplayName" class="text-sm text-slate-600 font-medium hidden sm:inline"></span>
+        <div id="userAvatar"
+          class="w-8 h-8 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center cursor-default select-none">
+          ?
+        </div>
+        <button id="btnLogout"
+          class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-100 transition border border-slate-200">
+          로그아웃
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── 메인 ── -->
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-10">
+
+    <!-- 로그인 유도 배너 (비로그인) -->
+    <section id="loginBanner"
+      class="hidden rounded-2xl border border-blue-200 bg-blue-50 p-8 text-center space-y-4">
+      <svg class="w-12 h-12 text-blue-400 mx-auto" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
+      </svg>
+      <h2 class="text-xl font-bold text-slate-800">로그인이 필요합니다</h2>
+      <p class="text-slate-500 text-sm">개선 문제를 제출하거나 제출 내역을 확인하려면 먼저 로그인해 주세요.</p>
+      <button id="btnGoogleLogin2"
+        class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition shadow">
+        <svg class="w-4 h-4" viewBox="0 0 24 24">
+          <path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+          <path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Google 계정으로 계속하기
+      </button>
+    </section>
+
+    <!-- 문제 제출 폼 (로그인 후) -->
+    <section id="submitSection" class="hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-slate-800">개선 문제 제출</h2>
+          <p class="text-slate-500 text-sm mt-0.5">불편사항이나 개선이 필요한 내용을 알려주세요.</p>
+        </div>
+      </div>
+
+      <form id="problemForm" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-5">
+        <!-- 제목 -->
+        <div class="space-y-1.5">
+          <label class="block text-sm font-semibold text-slate-700" for="inputTitle">
+            제목 <span class="text-red-400">*</span>
+          </label>
+          <input id="inputTitle" type="text" required maxlength="100"
+            placeholder="문제를 간단히 요약해 주세요"
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-800 placeholder-slate-400
+                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" />
+        </div>
+
+        <!-- 카테고리 -->
+        <div class="space-y-1.5">
+          <label class="block text-sm font-semibold text-slate-700" for="inputCategory">
+            분류 <span class="text-red-400">*</span>
+          </label>
+          <select id="inputCategory" required
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-800 bg-white
+                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition appearance-none">
+            <option value="" disabled selected>카테고리를 선택하세요</option>
+            <option value="시설/환경">시설/환경</option>
+            <option value="업무 프로세스">업무 프로세스</option>
+            <option value="장비/도구">장비/도구</option>
+            <option value="안전">안전</option>
+            <option value="소통/협업">소통/협업</option>
+            <option value="기타">기타</option>
+          </select>
+        </div>
+
+        <!-- 내용 -->
+        <div class="space-y-1.5">
+          <label class="block text-sm font-semibold text-slate-700" for="inputDescription">
+            내용 <span class="text-red-400">*</span>
+          </label>
+          <textarea id="inputDescription" required rows="4" maxlength="1000"
+            placeholder="문제 상황을 구체적으로 설명해 주세요"
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-800 placeholder-slate-400
+                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"></textarea>
+        </div>
+
+        <!-- 개선 제안 -->
+        <div class="space-y-1.5">
+          <label class="block text-sm font-semibold text-slate-700" for="inputSuggestion">
+            개선 제안
+          </label>
+          <textarea id="inputSuggestion" rows="3" maxlength="500"
+            placeholder="어떻게 개선되면 좋을지 아이디어를 적어주세요 (선택)"
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-800 placeholder-slate-400
+                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"></textarea>
+        </div>
+
+        <div class="flex justify-end pt-2">
+          <button type="submit" id="btnSubmit"
+            class="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 text-white font-semibold text-sm
+                   hover:bg-blue-700 active:scale-95 transition disabled:opacity-60 disabled:cursor-not-allowed shadow">
+            <span id="submitBtnText">제출하기</span>
+            <div id="submitSpinner" class="spinner hidden !w-4 !h-4 border-2 border-white/40 border-t-white"></div>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- 내 제출 내역 -->
+    <section id="myListSection" class="hidden space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-slate-800">내 제출 내역</h2>
+          <p class="text-slate-500 text-sm mt-0.5">본인이 제출한 문제만 표시됩니다.</p>
+        </div>
+        <button id="btnRefresh"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500
+                 hover:bg-slate-100 border border-slate-200 transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          새로고침
+        </button>
+      </div>
+
+      <!-- 로딩 -->
+      <div id="listLoading" class="flex justify-center py-12">
+        <div class="spinner"></div>
+      </div>
+
+      <!-- 빈 상태 -->
+      <div id="listEmpty" class="hidden rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center space-y-2">
+        <svg class="w-10 h-10 text-slate-300 mx-auto" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <p class="text-slate-500 text-sm font-medium">아직 제출한 문제가 없습니다.</p>
+        <p class="text-slate-400 text-xs">위 폼을 통해 첫 번째 문제를 제출해 보세요.</p>
+      </div>
+
+      <!-- 카드 목록 -->
+      <div id="problemList" class="hidden grid gap-4 sm:grid-cols-1"></div>
+    </section>
+
+  </main>
+
+  <!-- ── 토스트 알림 ── -->
+  <div id="toast"
+    class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3
+           px-5 py-3.5 rounded-2xl shadow-xl text-sm font-medium text-white min-w-[220px] max-w-sm">
+    <span id="toastIcon" class="text-base"></span>
+    <span id="toastMsg"></span>
+  </div>
+
+  <!-- ── JavaScript ── -->
+  <script type="module">
+    import {
+      auth, db, googleProvider, isAdmin,
+      signInWithPopup, signOut, onAuthStateChanged,
+      collection, addDoc, query, where, orderBy,
+      getDocs, serverTimestamp,
+    } from "./firebase-config.js";
+
+    // ── DOM 참조 ────────────────────────────────────────────
+    const authLoggedOut  = document.getElementById("authLoggedOut");
+    const authLoggedIn   = document.getElementById("authLoggedIn");
+    const userDisplayName = document.getElementById("userDisplayName");
+    const userAvatar     = document.getElementById("userAvatar");
+    const loginBanner    = document.getElementById("loginBanner");
+    const submitSection  = document.getElementById("submitSection");
+    const myListSection  = document.getElementById("myListSection");
+    const problemForm    = document.getElementById("problemForm");
+    const btnSubmit      = document.getElementById("btnSubmit");
+    const submitBtnText  = document.getElementById("submitBtnText");
+    const submitSpinner  = document.getElementById("submitSpinner");
+    const listLoading    = document.getElementById("listLoading");
+    const listEmpty      = document.getElementById("listEmpty");
+    const problemList    = document.getElementById("problemList");
+
+    let currentUser = null;
+
+    // ── 토스트 ───────────────────────────────────────────────
+    let toastTimer;
+    function showToast(msg, type = "success") {
+      const toast = document.getElementById("toast");
+      const toastMsg  = document.getElementById("toastMsg");
+      const toastIcon = document.getElementById("toastIcon");
+      const colors = { success: "bg-emerald-500", error: "bg-red-500", info: "bg-blue-500" };
+      const icons  = { success: "✓", error: "✕", info: "ℹ" };
+      toast.className = toast.className.replace(/bg-\w+-\d+/g, "");
+      toast.classList.remove("hidden");
+      toast.classList.add(colors[type] || colors.info);
+      toastMsg.textContent  = msg;
+      toastIcon.textContent = icons[type] || icons.info;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.add("hidden"), 3000);
+    }
+
+    // ── 카테고리 색상 맵 ─────────────────────────────────────
+    const categoryColors = {
+      "시설/환경":    "bg-purple-100 text-purple-700",
+      "업무 프로세스": "bg-blue-100 text-blue-700",
+      "장비/도구":    "bg-orange-100 text-orange-700",
+      "안전":         "bg-red-100 text-red-700",
+      "소통/협업":    "bg-teal-100 text-teal-700",
+      "기타":         "bg-slate-100 text-slate-600",
+    };
+
+    // ── 상태 뱃지 ─────────────────────────────────────────────
+    const statusColors = {
+      "접수됨": "bg-blue-100 text-blue-700",
+      "검토중": "bg-yellow-100 text-yellow-700",
+      "완료":   "bg-green-100 text-green-700",
+    };
+
+    // ── UI 상태 전환 ──────────────────────────────────────────
+    function showLoggedIn(user) {
+      authLoggedOut.classList.add("hidden");
+      authLoggedIn.classList.remove("hidden");
+      loginBanner.classList.add("hidden");
+      submitSection.classList.remove("hidden");
+      myListSection.classList.remove("hidden");
+
+      const name = user.displayName || user.email;
+      userDisplayName.textContent = name;
+      userAvatar.textContent = name.charAt(0).toUpperCase();
+    }
+
+    function showLoggedOut() {
+      authLoggedOut.classList.remove("hidden");
+      authLoggedIn.classList.add("hidden");
+      loginBanner.classList.remove("hidden");
+      submitSection.classList.add("hidden");
+      myListSection.classList.add("hidden");
+    }
+
+    // ── 구글 로그인 ───────────────────────────────────────────
+    async function handleGoogleLogin() {
+      try {
+        await signInWithPopup(auth, googleProvider);
+      } catch (e) {
+        console.error(e);
+        showToast("로그인에 실패했습니다. 다시 시도해 주세요.", "error");
+      }
+    }
+
+    document.getElementById("btnGoogleLogin").addEventListener("click", handleGoogleLogin);
+    document.getElementById("btnGoogleLogin2").addEventListener("click", handleGoogleLogin);
+    document.getElementById("btnLogout").addEventListener("click", () => signOut(auth));
+
+    // ── 내 제출 내역 불러오기 ─────────────────────────────────
+    async function loadMyProblems(uid) {
+      listLoading.classList.remove("hidden");
+      listEmpty.classList.add("hidden");
+      problemList.classList.add("hidden");
+      problemList.innerHTML = "";
+
+      try {
+        const q = query(
+          collection(db, "problems"),
+          where("userId", "==", uid),
+          orderBy("createdAt", "desc")
+        );
+        const snapshot = await getDocs(q);
+
+        listLoading.classList.add("hidden");
+
+        if (snapshot.empty) {
+          listEmpty.classList.remove("hidden");
+          return;
+        }
+
+        problemList.classList.remove("hidden");
+        snapshot.forEach(docSnap => {
+          const d = docSnap.data();
+          const date = d.createdAt?.toDate
+            ? d.createdAt.toDate().toLocaleDateString("ko-KR", { year:"numeric", month:"2-digit", day:"2-digit" })
+            : "—";
+          const catColor  = categoryColors[d.category]  || "bg-slate-100 text-slate-600";
+          const statColor = statusColors[d.status]      || "bg-slate-100 text-slate-600";
+
+          const card = document.createElement("div");
+          card.className = "bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-3 hover:shadow-md transition";
+          card.innerHTML = `
+            <div class="flex items-start justify-between gap-2">
+              <h3 class="font-semibold text-slate-800 text-base leading-snug">${escapeHtml(d.title)}</h3>
+              <span class="shrink-0 text-xs font-medium px-2.5 py-1 rounded-full ${statColor}">${d.status ?? "접수됨"}</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-medium px-2.5 py-1 rounded-full ${catColor}">${escapeHtml(d.category)}</span>
+              <span class="text-xs text-slate-400">${date}</span>
+            </div>
+            <p class="text-sm text-slate-600 leading-relaxed line-clamp-3">${escapeHtml(d.description)}</p>
+            ${d.suggestion ? `
+              <div class="rounded-xl bg-slate-50 border border-slate-100 px-4 py-3">
+                <p class="text-xs font-semibold text-slate-500 mb-1">💡 개선 제안</p>
+                <p class="text-sm text-slate-600 line-clamp-2">${escapeHtml(d.suggestion)}</p>
+              </div>` : ""}
+          `;
+          problemList.appendChild(card);
+        });
+      } catch (e) {
+        console.error(e);
+        listLoading.classList.add("hidden");
+        showToast("목록을 불러오는 중 오류가 발생했습니다.", "error");
+      }
+    }
+
+    // ── 폼 제출 ────────────────────────────────────────────────
+    problemForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!currentUser) return;
+
+      const title       = document.getElementById("inputTitle").value.trim();
+      const category    = document.getElementById("inputCategory").value;
+      const description = document.getElementById("inputDescription").value.trim();
+      const suggestion  = document.getElementById("inputSuggestion").value.trim();
+
+      if (!title || !category || !description) {
+        showToast("필수 항목을 모두 입력해 주세요.", "error");
+        return;
+      }
+
+      btnSubmit.disabled = true;
+      submitBtnText.textContent = "제출 중...";
+      submitSpinner.classList.remove("hidden");
+
+      try {
+        await addDoc(collection(db, "problems"), {
+          title,
+          category,
+          description,
+          suggestion,
+          userId:    currentUser.uid,
+          userEmail: currentUser.email,
+          userName:  currentUser.displayName || currentUser.email,
+          createdAt: serverTimestamp(),
+          status:    "접수됨",
+        });
+
+        problemForm.reset();
+        showToast("문제가 성공적으로 제출되었습니다! ✅", "success");
+        loadMyProblems(currentUser.uid);
+      } catch (e) {
+        console.error(e);
+        showToast("제출 중 오류가 발생했습니다.", "error");
+      } finally {
+        btnSubmit.disabled = false;
+        submitBtnText.textContent = "제출하기";
+        submitSpinner.classList.add("hidden");
+      }
+    });
+
+    // ── 새로고침 버튼 ──────────────────────────────────────────
+    document.getElementById("btnRefresh").addEventListener("click", () => {
+      if (currentUser) loadMyProblems(currentUser.uid);
+    });
+
+    // ── Auth 상태 감지 ────────────────────────────────────────
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        showLoggedIn(user);
+        loadMyProblems(user.uid);
+      } else {
+        currentUser = null;
+        showLoggedOut();
+      }
+    });
+
+    // ── HTML Escape ───────────────────────────────────────────
+    function escapeHtml(str = "") {
+      return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+  </script>
+
+</body>
+</html>
