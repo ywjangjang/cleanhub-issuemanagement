@@ -17,17 +17,14 @@
       animation: spin .7s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    /* 접근 차단 오버레이 */
-    #accessDenied {
-      backdrop-filter: blur(4px);
-    }
   </style>
 </head>
 <body class="bg-slate-50 min-h-screen font-sans antialiased">
 
-  <!-- ── 접근 차단 오버레이 (Auth Guard) ── -->
+  <!-- ── 접근 차단 오버레이 ── -->
   <div id="accessDenied"
-    class="fixed inset-0 z-50 bg-slate-900/70 flex items-center justify-center hidden">
+    class="fixed inset-0 z-50 bg-slate-900/70 flex items-center justify-center hidden"
+    style="backdrop-filter:blur(4px)">
     <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 text-center space-y-4">
       <div class="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto">
         <svg class="w-7 h-7 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -44,7 +41,7 @@
     </div>
   </div>
 
-  <!-- ── 초기 로딩 화면 ── -->
+  <!-- ── 초기 로딩 ── -->
   <div id="initLoading" class="fixed inset-0 z-40 bg-slate-50 flex flex-col items-center justify-center gap-4">
     <div class="spinner"></div>
     <p class="text-slate-400 text-sm">권한 확인 중...</p>
@@ -61,12 +58,8 @@
         <span class="font-bold text-slate-800 text-lg tracking-tight">클린허브</span>
         <span class="px-2 py-0.5 text-xs font-semibold bg-indigo-100 text-indigo-700 rounded-full">관리자</span>
       </div>
-
       <div class="flex items-center gap-3">
-        <a href="index.html"
-          class="text-xs font-medium text-slate-500 hover:text-slate-800 transition hidden sm:inline">
-          ← 제출자 페이지
-        </a>
+        <a href="index.html" class="text-xs font-medium text-slate-500 hover:text-slate-800 transition hidden sm:inline">← 제출자 페이지</a>
         <span id="adminName" class="text-sm text-slate-600 font-medium hidden sm:inline"></span>
         <button id="btnLogout"
           class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-100 transition border border-slate-200">
@@ -77,48 +70,37 @@
   </header>
 
   <!-- ── 메인 ── -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
 
     <!-- 통계 카드 -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-1">
-        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">전체</p>
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">전체 제출</p>
         <p id="statTotal" class="text-3xl font-bold text-slate-800">—</p>
       </div>
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-1">
-        <p class="text-xs font-semibold text-blue-500 uppercase tracking-wide">접수됨</p>
-        <p id="statReceived" class="text-3xl font-bold text-blue-600">—</p>
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">제출자 수</p>
+        <p id="statUsers" class="text-3xl font-bold text-indigo-600">—</p>
       </div>
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-1">
-        <p class="text-xs font-semibold text-yellow-500 uppercase tracking-wide">검토중</p>
-        <p id="statReviewing" class="text-3xl font-bold text-yellow-500">—</p>
-      </div>
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-1">
-        <p class="text-xs font-semibold text-green-500 uppercase tracking-wide">완료</p>
-        <p id="statDone" class="text-3xl font-bold text-green-500">—</p>
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-1 col-span-2 sm:col-span-1">
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">이번 달 제출</p>
+        <p id="statThisMonth" class="text-3xl font-bold text-emerald-600">—</p>
       </div>
     </div>
 
-    <!-- 필터 / 검색 바 -->
+    <!-- 툴바 -->
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-wrap gap-3 items-center">
+      <!-- 검색 -->
       <div class="relative flex-1 min-w-[180px]">
         <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.65 16.65 7.5 7.5 0 0016.65 16.65z"/>
         </svg>
-        <input id="searchInput" type="text" placeholder="제목 또는 이메일 검색..."
+        <input id="searchInput" type="text" placeholder="제목, 이름, 이메일 검색..."
           class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-sm text-slate-800 placeholder-slate-400
                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
       </div>
 
-      <select id="filterStatus"
-        class="px-4 py-2 rounded-xl border border-slate-200 text-sm text-slate-700 bg-white
-               focus:outline-none focus:ring-2 focus:ring-indigo-500 transition appearance-none">
-        <option value="">모든 상태</option>
-        <option value="접수됨">접수됨</option>
-        <option value="검토중">검토중</option>
-        <option value="완료">완료</option>
-      </select>
-
+      <!-- 분류 필터 -->
       <select id="filterCategory"
         class="px-4 py-2 rounded-xl border border-slate-200 text-sm text-slate-700 bg-white
                focus:outline-none focus:ring-2 focus:ring-indigo-500 transition appearance-none">
@@ -131,9 +113,31 @@
         <option>기타</option>
       </select>
 
+      <!-- 뷰 전환 -->
+      <div class="flex rounded-xl border border-slate-200 overflow-hidden">
+        <button id="btnViewTable" onclick="setView('table')"
+          class="px-3 py-2 text-xs font-medium bg-indigo-600 text-white transition">
+          전체 목록
+        </button>
+        <button id="btnViewGroup" onclick="setView('group')"
+          class="px-3 py-2 text-xs font-medium text-slate-500 hover:bg-slate-50 transition">
+          제출자별
+        </button>
+      </div>
+
+      <!-- 다운로드 -->
+      <button id="btnDownload"
+        class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 transition shadow-sm ml-auto">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+        스프레드시트 다운로드
+      </button>
+
+      <!-- 새로고침 -->
       <button id="btnRefresh"
         class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-500
-               hover:bg-slate-100 border border-slate-200 transition ml-auto">
+               hover:bg-slate-100 border border-slate-200 transition">
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
         </svg>
@@ -141,27 +145,16 @@
       </button>
     </div>
 
-    <!-- 테이블 섹션 -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <!-- ── 전체 목록 뷰 ── -->
+    <div id="viewTable" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
       <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
         <h2 class="font-bold text-slate-800">전체 제출 내역</h2>
         <span id="resultCount" class="text-xs text-slate-400 font-medium"></span>
       </div>
-
-      <!-- 로딩 -->
-      <div id="tableLoading" class="flex justify-center py-16">
-        <div class="spinner"></div>
-      </div>
-
-      <!-- 빈 상태 -->
-      <div id="tableEmpty" class="hidden py-16 text-center space-y-2">
-        <svg class="w-10 h-10 text-slate-300 mx-auto" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
-        </svg>
+      <div id="tableLoading" class="flex justify-center py-16"><div class="spinner"></div></div>
+      <div id="tableEmpty" class="hidden py-16 text-center">
         <p class="text-slate-400 text-sm">조건에 맞는 데이터가 없습니다.</p>
       </div>
-
-      <!-- 테이블 -->
       <div id="tableWrap" class="hidden overflow-x-auto">
         <table class="w-full text-sm">
           <thead>
@@ -170,13 +163,21 @@
               <th class="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">제출자</th>
               <th class="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">제목</th>
               <th class="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">분류</th>
-              <th class="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">상태</th>
               <th class="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">내용</th>
             </tr>
           </thead>
           <tbody id="tableBody" class="divide-y divide-slate-100"></tbody>
         </table>
       </div>
+    </div>
+
+    <!-- ── 제출자별 뷰 ── -->
+    <div id="viewGroup" class="hidden space-y-4">
+      <div id="groupLoading" class="flex justify-center py-16"><div class="spinner"></div></div>
+      <div id="groupEmpty" class="hidden bg-white rounded-2xl border border-slate-200 py-16 text-center">
+        <p class="text-slate-400 text-sm">데이터가 없습니다.</p>
+      </div>
+      <div id="groupContent"></div>
     </div>
 
   </main>
@@ -203,34 +204,34 @@
   <div id="toast"
     class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3
            px-5 py-3.5 rounded-2xl shadow-xl text-sm font-medium text-white min-w-[220px] max-w-sm">
-    <span id="toastIcon" class="text-base"></span>
+    <span id="toastIcon"></span>
     <span id="toastMsg"></span>
   </div>
 
-  <!-- ── JavaScript ── -->
   <script type="module">
     import {
       auth, db, isAdmin,
       signOut, onAuthStateChanged,
       collection, query, orderBy, getDocs,
-      doc, updateDoc,
     } from "./firebase-config.js";
 
-    // ── DOM ──────────────────────────────────────────────────
-    const accessDenied   = document.getElementById("accessDenied");
+    const accessDenied    = document.getElementById("accessDenied");
     const accessDeniedMsg = document.getElementById("accessDeniedMsg");
-    const initLoading    = document.getElementById("initLoading");
-    const adminName      = document.getElementById("adminName");
-    const tableLoading   = document.getElementById("tableLoading");
-    const tableEmpty     = document.getElementById("tableEmpty");
-    const tableWrap      = document.getElementById("tableWrap");
-    const tableBody      = document.getElementById("tableBody");
-    const resultCount    = document.getElementById("resultCount");
-    const searchInput    = document.getElementById("searchInput");
-    const filterStatus   = document.getElementById("filterStatus");
-    const filterCategory = document.getElementById("filterCategory");
+    const initLoading     = document.getElementById("initLoading");
+    const adminName       = document.getElementById("adminName");
+    const tableLoading    = document.getElementById("tableLoading");
+    const tableEmpty      = document.getElementById("tableEmpty");
+    const tableWrap       = document.getElementById("tableWrap");
+    const tableBody       = document.getElementById("tableBody");
+    const resultCount     = document.getElementById("resultCount");
+    const searchInput     = document.getElementById("searchInput");
+    const filterCategory  = document.getElementById("filterCategory");
+    const groupLoading    = document.getElementById("groupLoading");
+    const groupEmpty      = document.getElementById("groupEmpty");
+    const groupContent    = document.getElementById("groupContent");
 
-    let allData = [];   // 전체 캐시
+    let allData  = [];
+    let viewMode = "table";
 
     // ── 토스트 ───────────────────────────────────────────────
     let toastTimer;
@@ -247,80 +248,104 @@
       toastTimer = setTimeout(() => toast.classList.add("hidden"), 3000);
     }
 
-    // ── Auth Guard ──────────────────────────────────────────
-    //  onAuthStateChanged 첫 콜백까지 initLoading을 보여주고,
-    //  - 비로그인  → "로그인 필요" 경고 후 리다이렉트
-    //  - 로그인은 됐지만 관리자 아님 → "권한 없음" 경고
-    //  - 관리자    → 대시보드 표시
+    // ── Auth Guard ───────────────────────────────────────────
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        accessDeniedMsg.textContent = "로그인이 필요합니다. 메인 페이지에서 로그인 후 다시 접근해 주세요.";
+        accessDeniedMsg.textContent = "로그인이 필요합니다. 메인 페이지에서 로그인 후 접근해 주세요.";
         initLoading.classList.add("hidden");
         accessDenied.classList.remove("hidden");
-
-        // 3초 뒤 자동 리다이렉트
         setTimeout(() => { window.location.href = "index.html"; }, 3000);
         return;
       }
-
       if (!isAdmin(user.email)) {
         accessDeniedMsg.textContent = "관리자 권한이 없습니다. 접근이 거부되었습니다.";
         initLoading.classList.add("hidden");
         accessDenied.classList.remove("hidden");
-        // 3초 뒤 자동 리다이렉트
         setTimeout(() => { window.location.href = "index.html"; }, 3000);
         return;
       }
-
-      // ✅ 관리자 인증 통과
       initLoading.classList.add("hidden");
       adminName.textContent = user.displayName || user.email;
       await loadAllProblems();
     });
 
-    // ── 로그아웃 ─────────────────────────────────────────────
     document.getElementById("btnLogout").addEventListener("click", () => signOut(auth));
 
-    // ── 전체 데이터 로딩 ─────────────────────────────────────
+    // ── 데이터 로딩 ──────────────────────────────────────────
     async function loadAllProblems() {
       tableLoading.classList.remove("hidden");
-      tableEmpty.classList.add("hidden");
       tableWrap.classList.add("hidden");
+      tableEmpty.classList.add("hidden");
+      groupLoading.classList.remove("hidden");
+      groupContent.innerHTML = "";
+      groupEmpty.classList.add("hidden");
 
       try {
-        const q = query(
-          collection(db, "problems"),
-          orderBy("createdAt", "desc")
-        );
+        const q = query(collection(db, "problems"), orderBy("createdAt", "desc"));
         const snapshot = await getDocs(q);
         allData = [];
-        snapshot.forEach(docSnap => {
-          allData.push({ id: docSnap.id, ...docSnap.data() });
-        });
-        tableLoading.classList.add("hidden");
+        snapshot.forEach(docSnap => allData.push({ id: docSnap.id, ...docSnap.data() }));
         updateStats();
-        renderTable(allData);
+        applyFilter();
       } catch (e) {
         console.error(e);
-        tableLoading.classList.add("hidden");
         showToast("데이터를 불러오는 중 오류가 발생했습니다.", "error");
+      } finally {
+        tableLoading.classList.add("hidden");
+        groupLoading.classList.add("hidden");
       }
     }
 
-    // ── 통계 업데이트 ────────────────────────────────────────
+    // ── 통계 ─────────────────────────────────────────────────
     function updateStats() {
+      const now = new Date();
+      const thisMonth = allData.filter(d => {
+        const date = d.createdAt?.toDate ? d.createdAt.toDate() : null;
+        return date && date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+      });
+      const uniqueUsers = new Set(allData.map(d => d.userId)).size;
       document.getElementById("statTotal").textContent     = allData.length;
-      document.getElementById("statReceived").textContent  = allData.filter(d => d.status === "접수됨").length;
-      document.getElementById("statReviewing").textContent = allData.filter(d => d.status === "검토중").length;
-      document.getElementById("statDone").textContent      = allData.filter(d => d.status === "완료").length;
+      document.getElementById("statUsers").textContent     = uniqueUsers;
+      document.getElementById("statThisMonth").textContent = thisMonth.length;
     }
 
-    // ── 테이블 렌더링 ────────────────────────────────────────
-    const statusColors = {
-      "접수됨": "bg-blue-100 text-blue-700",
-      "검토중": "bg-yellow-100 text-yellow-700",
-      "완료":   "bg-green-100 text-green-700",
+    // ── 필터 ─────────────────────────────────────────────────
+    function applyFilter() {
+      const keyword  = searchInput.value.toLowerCase();
+      const category = filterCategory.value;
+
+      const filtered = allData.filter(d => {
+        const matchKeyword  = !keyword  ||
+          d.title?.toLowerCase().includes(keyword) ||
+          d.userEmail?.toLowerCase().includes(keyword) ||
+          d.userName?.toLowerCase().includes(keyword);
+        const matchCategory = !category || d.category === category;
+        return matchKeyword && matchCategory;
+      });
+
+      if (viewMode === "table") renderTable(filtered);
+      else renderGroup(filtered);
+    }
+
+    searchInput.addEventListener("input", applyFilter);
+    filterCategory.addEventListener("change", applyFilter);
+    document.getElementById("btnRefresh").addEventListener("click", loadAllProblems);
+
+    // ── 뷰 전환 ──────────────────────────────────────────────
+    window.setView = function(mode) {
+      viewMode = mode;
+      document.getElementById("viewTable").classList.toggle("hidden", mode !== "table");
+      document.getElementById("viewGroup").classList.toggle("hidden", mode !== "group");
+      document.getElementById("btnViewTable").className =
+        "px-3 py-2 text-xs font-medium transition " +
+        (mode === "table" ? "bg-indigo-600 text-white" : "text-slate-500 hover:bg-slate-50");
+      document.getElementById("btnViewGroup").className =
+        "px-3 py-2 text-xs font-medium transition " +
+        (mode === "group" ? "bg-indigo-600 text-white" : "text-slate-500 hover:bg-slate-50");
+      applyFilter();
     };
+
+    // ── 전체 목록 테이블 렌더링 ───────────────────────────────
     const categoryColors = {
       "시설/환경":    "bg-purple-100 text-purple-700",
       "업무 프로세스": "bg-blue-100 text-blue-700",
@@ -339,20 +364,15 @@
         tableWrap.classList.add("hidden");
         return;
       }
-
       tableWrap.classList.remove("hidden");
       tableEmpty.classList.add("hidden");
 
       data.forEach(d => {
-        const date = d.createdAt?.toDate
-          ? d.createdAt.toDate().toLocaleDateString("ko-KR", { year:"numeric", month:"2-digit", day:"2-digit" })
-          : "—";
-        const statColor = statusColors[d.status] || "bg-slate-100 text-slate-600";
-        const catColor  = categoryColors[d.category] || "bg-slate-100 text-slate-600";
+        const date = formatDate(d.createdAt);
+        const catColor = categoryColors[d.category] || "bg-slate-100 text-slate-600";
 
         const tr = document.createElement("tr");
-        tr.className = "hover:bg-slate-50 transition cursor-pointer group";
-        tr.dataset.id = d.id;
+        tr.className = "hover:bg-slate-50 transition cursor-pointer";
         tr.innerHTML = `
           <td class="px-5 py-3.5 text-slate-500 whitespace-nowrap text-xs">${date}</td>
           <td class="px-5 py-3.5">
@@ -365,99 +385,129 @@
           <td class="px-5 py-3.5 whitespace-nowrap">
             <span class="text-xs font-medium px-2 py-1 rounded-full ${catColor}">${escapeHtml(d.category)}</span>
           </td>
-          <td class="px-5 py-3.5 whitespace-nowrap">
-            <select data-docid="${d.id}"
-              class="status-select text-xs font-medium px-2 py-1 rounded-full border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-400 ${statColor}">
-              <option value="접수됨" ${d.status === "접수됨" ? "selected" : ""}>접수됨</option>
-              <option value="검토중" ${d.status === "검토중" ? "selected" : ""}>검토중</option>
-              <option value="완료"   ${d.status === "완료"   ? "selected" : ""}>완료</option>
-            </select>
-          </td>
-          <td class="px-5 py-3.5 max-w-[220px]">
+          <td class="px-5 py-3.5 max-w-[260px]">
             <p class="text-slate-500 text-xs truncate">${escapeHtml(d.description)}</p>
           </td>
         `;
-
-        // 행 클릭 → 상세 모달 (select 클릭 제외)
-        tr.addEventListener("click", (e) => {
-          if (e.target.classList.contains("status-select")) return;
-          openModal(d);
-        });
-
+        tr.addEventListener("click", () => openModal(d));
         tableBody.appendChild(tr);
       });
-
-      // 상태 변경 이벤트 위임
-      document.querySelectorAll(".status-select").forEach(sel => {
-        sel.addEventListener("change", handleStatusChange);
-      });
     }
 
-    // ── 상태 변경 저장 ────────────────────────────────────────
-    async function handleStatusChange(e) {
-      const docId    = e.target.dataset.docid;
-      const newStatus = e.target.value;
-      const select   = e.target;
-      select.disabled = true;
+    // ── 제출자별 그룹 렌더링 ─────────────────────────────────
+    function renderGroup(data) {
+      groupContent.innerHTML = "";
 
-      try {
-        await updateDoc(doc(db, "problems", docId), { status: newStatus });
-
-        // 캐시 업데이트
-        const item = allData.find(d => d.id === docId);
-        if (item) item.status = newStatus;
-        updateStats();
-
-        // 색상 갱신
-        const sc = statusColors[newStatus] || "bg-slate-100 text-slate-600";
-        select.className = select.className.replace(/bg-\w+-\d+\s+text-\w+-\d+/g, "").trim();
-        select.classList.add(...sc.split(" "));
-
-        showToast(`상태가 '${newStatus}'(으)로 변경되었습니다.`, "success");
-      } catch (err) {
-        console.error(err);
-        showToast("상태 변경 중 오류가 발생했습니다.", "error");
-      } finally {
-        select.disabled = false;
+      if (data.length === 0) {
+        groupEmpty.classList.remove("hidden");
+        return;
       }
-    }
+      groupEmpty.classList.add("hidden");
 
-    // ── 필터링 ───────────────────────────────────────────────
-    function applyFilter() {
-      const keyword  = searchInput.value.toLowerCase();
-      const status   = filterStatus.value;
-      const category = filterCategory.value;
-
-      const filtered = allData.filter(d => {
-        const matchKeyword  = !keyword  || d.title?.toLowerCase().includes(keyword) || d.userEmail?.toLowerCase().includes(keyword);
-        const matchStatus   = !status   || d.status === status;
-        const matchCategory = !category || d.category === category;
-        return matchKeyword && matchStatus && matchCategory;
+      // 제출자별로 묶기
+      const grouped = {};
+      data.forEach(d => {
+        const key = d.userId || d.userEmail;
+        if (!grouped[key]) {
+          grouped[key] = { name: d.userName || "—", email: d.userEmail || "—", items: [] };
+        }
+        grouped[key].items.push(d);
       });
-      renderTable(filtered);
+
+      Object.values(grouped).forEach(group => {
+        const section = document.createElement("div");
+        section.className = "bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden";
+
+        // 제출자 헤더
+        section.innerHTML = `
+          <div class="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-full bg-indigo-600 text-white text-sm font-bold flex items-center justify-center shrink-0">
+                ${escapeHtml(group.name.charAt(0).toUpperCase())}
+              </div>
+              <div>
+                <p class="font-semibold text-slate-800 text-sm">${escapeHtml(group.name)}</p>
+                <p class="text-slate-400 text-xs">${escapeHtml(group.email)}</p>
+              </div>
+            </div>
+            <span class="text-xs font-semibold bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full">
+              ${group.items.length}건
+            </span>
+          </div>
+        `;
+
+        // 해당 제출자의 아이템들
+        const list = document.createElement("div");
+        list.className = "divide-y divide-slate-100";
+
+        group.items.forEach(d => {
+          const date = formatDate(d.createdAt);
+          const catColor = categoryColors[d.category] || "bg-slate-100 text-slate-600";
+          const row = document.createElement("div");
+          row.className = "px-6 py-4 hover:bg-slate-50 cursor-pointer transition flex items-start gap-4";
+          row.innerHTML = `
+            <div class="flex-1 min-w-0 space-y-1">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-medium text-slate-800 text-sm">${escapeHtml(d.title)}</span>
+                <span class="text-xs font-medium px-2 py-0.5 rounded-full ${catColor}">${escapeHtml(d.category)}</span>
+              </div>
+              <p class="text-slate-500 text-xs truncate">${escapeHtml(d.description)}</p>
+            </div>
+            <span class="text-xs text-slate-400 whitespace-nowrap shrink-0 mt-0.5">${date}</span>
+          `;
+          row.addEventListener("click", () => openModal(d));
+          list.appendChild(row);
+        });
+
+        section.appendChild(list);
+        groupContent.appendChild(section);
+      });
     }
 
-    searchInput.addEventListener("input", applyFilter);
-    filterStatus.addEventListener("change", applyFilter);
-    filterCategory.addEventListener("change", applyFilter);
-    document.getElementById("btnRefresh").addEventListener("click", loadAllProblems);
+    // ── CSV 다운로드 ──────────────────────────────────────────
+    document.getElementById("btnDownload").addEventListener("click", () => {
+      if (allData.length === 0) {
+        showToast("다운로드할 데이터가 없습니다.", "error");
+        return;
+      }
+
+      const headers = ["제출일", "제출자 이름", "이메일", "제목", "분류", "내용", "개선 제안"];
+      const rows = allData.map(d => [
+        formatDate(d.createdAt),
+        d.userName || "",
+        d.userEmail || "",
+        d.title || "",
+        d.category || "",
+        d.description || "",
+        d.suggestion || "",
+      ]);
+
+      const csvContent = [headers, ...rows]
+        .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+        .join("\n");
+
+      const BOM = "﻿"; // 한글 깨짐 방지
+      const blob = new Blob([BOM + csvContent], { type: "text/csv;charset=utf-8;" });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement("a");
+      const date = new Date().toISOString().slice(0, 10);
+      a.href     = url;
+      a.download = `클린허브_제출내역_${date}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("스프레드시트 다운로드가 시작되었습니다.", "success");
+    });
 
     // ── 상세 모달 ────────────────────────────────────────────
-    const detailModal = document.getElementById("detailModal");
+    const detailModal  = document.getElementById("detailModal");
     const modalContent = document.getElementById("modalContent");
 
     function openModal(d) {
-      const date = d.createdAt?.toDate
-        ? d.createdAt.toDate().toLocaleString("ko-KR")
-        : "—";
-      const statColor = statusColors[d.status] || "bg-slate-100 text-slate-600";
-      const catColor  = categoryColors[d.category] || "bg-slate-100 text-slate-600";
-
+      const catColor = categoryColors[d.category] || "bg-slate-100 text-slate-600";
       modalContent.innerHTML = `
         <div class="flex flex-wrap gap-2 items-center">
           <span class="text-xs font-medium px-2.5 py-1 rounded-full ${catColor}">${escapeHtml(d.category)}</span>
-          <span class="text-xs font-medium px-2.5 py-1 rounded-full ${statColor}">${d.status}</span>
-          <span class="text-xs text-slate-400 ml-auto">${date}</span>
+          <span class="text-xs text-slate-400 ml-auto">${formatDate(d.createdAt, true)}</span>
         </div>
         <h4 class="text-lg font-bold text-slate-800">${escapeHtml(d.title)}</h4>
         <div class="space-y-1">
@@ -477,17 +527,18 @@
       detailModal.classList.remove("hidden");
     }
 
-    document.getElementById("btnCloseModal").addEventListener("click", () => {
-      detailModal.classList.add("hidden");
-    });
-    detailModal.addEventListener("click", (e) => {
-      if (e.target === detailModal) detailModal.classList.add("hidden");
-    });
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") detailModal.classList.add("hidden");
-    });
+    document.getElementById("btnCloseModal").addEventListener("click", () => detailModal.classList.add("hidden"));
+    detailModal.addEventListener("click", e => { if (e.target === detailModal) detailModal.classList.add("hidden"); });
+    document.addEventListener("keydown", e => { if (e.key === "Escape") detailModal.classList.add("hidden"); });
 
-    // ── HTML Escape ───────────────────────────────────────────
+    // ── 유틸 ─────────────────────────────────────────────────
+    function formatDate(ts, full = false) {
+      if (!ts?.toDate) return "—";
+      const d = ts.toDate();
+      if (full) return d.toLocaleString("ko-KR");
+      return d.toLocaleDateString("ko-KR", { year: "numeric", month: "2-digit", day: "2-digit" });
+    }
+
     function escapeHtml(str = "") {
       return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
     }
