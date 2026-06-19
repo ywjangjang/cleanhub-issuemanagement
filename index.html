@@ -295,6 +295,20 @@
     const uploadProgressText = document.getElementById("uploadProgressText");
     const uploadProgressBar  = document.getElementById("uploadProgressBar");
 
+    const SLACK_WEBHOOK = "https://hooks.slack.com/triggers/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";
+
+    async function sendSlackNotification(userName, asIs, toBe, benefit) {
+      try {
+        await fetch(SLACK_WEBHOOK, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ submitter: userName, asIs, toBe, benefit }),
+        });
+      } catch (e) {
+        console.warn("슬랙 알림 실패:", e);
+      }
+    }
+
     let currentUser = null;
     let selectedFiles = [];  // 선택된 파일 목록
 
@@ -444,6 +458,7 @@
           createdAt: serverTimestamp(),
         });
 
+        sendSlackNotification(currentUser.displayName || currentUser.email, asIs, toBe, benefit);
         problemForm.reset();
         selectedFiles = [];
         photoPreviewArea.innerHTML = "";
